@@ -8,17 +8,23 @@
 
 /* Begin PBXBuildFile section */
 		73257F612BF7B9B400D34959 /* WhistateApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73257F602BF7B9B400D34959 /* WhistateApp.swift */; };
-		73257F632BF7B9B400D34959 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73257F622BF7B9B400D34959 /* ContentView.swift */; };
 		73257F652BF7B9B400D34959 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 73257F642BF7B9B400D34959 /* Assets.xcassets */; };
 		73257F682BF7B9B400D34959 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 73257F672BF7B9B400D34959 /* Preview Assets.xcassets */; };
+		73257F6F2BF7BADD00D34959 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73257F6E2BF7BADD00D34959 /* MainView.swift */; };
+		73257F712BF7BAEB00D34959 /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73257F702BF7BAEB00D34959 /* AudioRecorder.swift */; };
+		73257F732BF7BAF900D34959 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73257F722BF7BAF900D34959 /* AudioPlayer.swift */; };
+		73DA1CEB2BF7BB2A008278D4 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = 73DA1CEA2BF7BB2A008278D4 /* WhisperKit */; };
+		73DA1CED2BF7BB2A008278D4 /* whisperkit-cli in Frameworks */ = {isa = PBXBuildFile; productRef = 73DA1CEC2BF7BB2A008278D4 /* whisperkit-cli */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		73257F5D2BF7B9B400D34959 /* Whistate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Whistate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		73257F602BF7B9B400D34959 /* WhistateApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhistateApp.swift; sourceTree = "<group>"; };
-		73257F622BF7B9B400D34959 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		73257F642BF7B9B400D34959 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		73257F672BF7B9B400D34959 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		73257F6E2BF7BADD00D34959 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		73257F702BF7BAEB00D34959 /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
+		73257F722BF7BAF900D34959 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -26,6 +32,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				73DA1CEB2BF7BB2A008278D4 /* WhisperKit in Frameworks */,
+				73DA1CED2BF7BB2A008278D4 /* whisperkit-cli in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -52,7 +60,9 @@
 			isa = PBXGroup;
 			children = (
 				73257F602BF7B9B400D34959 /* WhistateApp.swift */,
-				73257F622BF7B9B400D34959 /* ContentView.swift */,
+				73257F6E2BF7BADD00D34959 /* MainView.swift */,
+				73257F702BF7BAEB00D34959 /* AudioRecorder.swift */,
+				73257F722BF7BAF900D34959 /* AudioPlayer.swift */,
 				73257F642BF7B9B400D34959 /* Assets.xcassets */,
 				73257F662BF7B9B400D34959 /* Preview Content */,
 			);
@@ -83,6 +93,10 @@
 			dependencies = (
 			);
 			name = Whistate;
+			packageProductDependencies = (
+				73DA1CEA2BF7BB2A008278D4 /* WhisperKit */,
+				73DA1CEC2BF7BB2A008278D4 /* whisperkit-cli */,
+			);
 			productName = Whistate;
 			productReference = 73257F5D2BF7B9B400D34959 /* Whistate.app */;
 			productType = "com.apple.product-type.application";
@@ -111,6 +125,9 @@
 				Base,
 			);
 			mainGroup = 73257F542BF7B9B400D34959;
+			packageReferences = (
+				73DA1CE92BF7BB2A008278D4 /* XCRemoteSwiftPackageReference "whisperkit" */,
+			);
 			productRefGroup = 73257F5E2BF7B9B400D34959 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -137,8 +154,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				73257F632BF7B9B400D34959 /* ContentView.swift in Sources */,
+				73257F712BF7BAEB00D34959 /* AudioRecorder.swift in Sources */,
 				73257F612BF7B9B400D34959 /* WhistateApp.swift in Sources */,
+				73257F6F2BF7BADD00D34959 /* MainView.swift in Sources */,
+				73257F732BF7BAF900D34959 /* AudioPlayer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -344,6 +363,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		73DA1CE92BF7BB2A008278D4 /* XCRemoteSwiftPackageReference "whisperkit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/argmaxinc/whisperkit";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		73DA1CEA2BF7BB2A008278D4 /* WhisperKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 73DA1CE92BF7BB2A008278D4 /* XCRemoteSwiftPackageReference "whisperkit" */;
+			productName = WhisperKit;
+		};
+		73DA1CEC2BF7BB2A008278D4 /* whisperkit-cli */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 73DA1CE92BF7BB2A008278D4 /* XCRemoteSwiftPackageReference "whisperkit" */;
+			productName = "whisperkit-cli";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 73257F552BF7B9B400D34959 /* Project object */;
 }
