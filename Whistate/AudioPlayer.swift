@@ -5,6 +5,7 @@ class AudioPlayer {
     var player: AVPlayer?
 
     func startAudio() {
+        let recordingSession = AVAudioSession.sharedInstance()
         let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let audioURL = documentsDirectory.appendingPathComponent("audio.m4a")
         
@@ -12,9 +13,19 @@ class AudioPlayer {
             print("Audio file does not exist at the specified path")
             return
         }
+
+        do {
+            try recordingSession.setCategory(.playback, mode: .default)
+            try recordingSession.setActive(true)
+            
+            player = AVPlayer(url: audioURL)
+            player?.play()
+        } catch {
+            print("Failed to set up playback session")
+            return
+        }
         
-        player = AVPlayer(url: audioURL)
-        player?.play()
+        
     }
     
     func stopAudio() {

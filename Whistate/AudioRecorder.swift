@@ -8,6 +8,13 @@ import WhisperKit
 class AudioRecorder: ObservableObject {
     let objectWillChange = PassthroughSubject<AudioRecorder, Never>()
     var audioRecorder: AVAudioRecorder!
+    let modelStorage: String = "huggingface/models/argmaxinc/whisperkit-coreml"
+    var localModelPath: String = ""
+    var localModels: [String] = []
+    var pipe: WhisperKit? = nil
+    
+    @AppStorage("selectedModel") private var selectedModel: String = WhisperKit.recommendedModels().default
+    @AppStorage("repoName") private var repoName: String = "argmaxinc/whisperkit-coreml"
     
     var recording = false {
         didSet {
@@ -49,6 +56,34 @@ class AudioRecorder: ObservableObject {
         @unknown default:
             break
         }
+    }
+    
+    func initializePipe() async throws {
+        pipe = try await WhisperKit(
+            prewarm: false,
+            load: false,
+            download: false
+        )
+        
+        var folder: URL?
+        // Check if the model is available locally
+        if localModels.contains("large-v3") {
+            // Get local model folder URL from localModels
+            // TODO: Make this configurable in the UI
+            folder = URL(fileURLWithPath: localModelPath).appendingPathComponent("large-v3")
+        } else {
+            // Download the model
+            folder = try await WhisperKit.download(variant: "large-v3", from: repoName, progressCallback: { progress in
+            })
+        }
+        
+        if let modelFolder = folder {
+            pipe?.modelFolder = modelFolder
+            try await pipe?.prewarmModels()
+        }
+        
+        // Prewarm models before transcription
+        try await pipe?.loadModels()
     }
     
     func startRecording() async {
@@ -105,10 +140,7 @@ class AudioRecorder: ObservableObject {
             
             let audioURL = documentsDirectory.appendingPathComponent("audio.m4a")
             let audioPath = audioURL.path(percentEncoded: true)
-            
-            let pipe = try await WhisperKit()
-            
-            guard let transcription = try await pipe.transcribe(audioPath: audioPath)?.text else {
+            guard let transcription = try await pipe?.transcribe(audioPath: audioPath)?.text else {
                 print("Failed to transcribe text from audio in WhisperKit")
                 transcribing = false
                 return
@@ -120,6 +152,45 @@ class AudioRecorder: ObservableObject {
         } catch {
             print("An error has occurred! \(error)")
             transcribing = false
+        }
+    }
+    
+    func fetchModels() {
+        // First check what's already downloaded
+        if let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            let modelPath = documents.appendingPathComponent(modelStorage).path
+            
+            // Check if the directory exists
+            if FileManager.default.fileExists(atPath: modelPath) {
+                do {
+                    localModelPath = modelPath
+                    let downloadedModels = try FileManager.default.contentsOfDirectory(atPath: modelPath)
+                    for model in downloadedModels where !localModels.contains(model) {
+                        localModels.append(model)
+                    }
+                } catch {
+                    print("Error enumerating files at \(modelPath): \(error.localizedDescription)")
+                }
+            }
+        }
+        
+        localModels = WhisperKit.formatModelFiles(localModels)
+        
+        print("Found locally: \(localModels)")
+        
+        //Task {
+        //    let remoteModels = try await WhisperKit.fetchAvailableModels(from: repoName)
+        //}
+    }
+    
+    init() {
+        self.fetchModels()
+        Task {
+            do {
+                try await self.initializePipe()
+            } catch {
+                print("Error initializing WhisperKit pipe! \(error.localizedDescription)")
+            }
         }
     }
 }
