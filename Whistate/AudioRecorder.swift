@@ -67,23 +67,28 @@ class AudioRecorder: ObservableObject {
         
         var folder: URL?
         // Check if the model is available locally
-        if localModels.contains("large-v3") {
+        if localModels.contains("large-v3") { // The string to check if a model is contained needs to be changed
             // Get local model folder URL from localModels
             // TODO: Make this configurable in the UI
             folder = URL(fileURLWithPath: localModelPath).appendingPathComponent("large-v3")
         } else {
             // Download the model
             folder = try await WhisperKit.download(variant: "large-v3", from: repoName, progressCallback: { progress in
+                print(progress)
             })
-        }
+        } 
+
         
         if let modelFolder = folder {
+
             pipe?.modelFolder = modelFolder
+            
             try await pipe?.prewarmModels()
         }
         
         // Prewarm models before transcription
         try await pipe?.loadModels()
+
     }
     
     func startRecording() async {
@@ -140,13 +145,13 @@ class AudioRecorder: ObservableObject {
             
             let audioURL = documentsDirectory.appendingPathComponent("audio.m4a")
             let audioPath = audioURL.path(percentEncoded: true)
-            guard let transcription = try await pipe?.transcribe(audioPath: audioPath)?.text else {
+            guard let transcription = try await pipe?.transcribe(audioPath: audioPath) else {
                 print("Failed to transcribe text from audio in WhisperKit")
                 transcribing = false
                 return
             }
             
-            transcriptionText = transcription
+            transcriptionText = transcription.text
             transcribing = false
             
         } catch {
