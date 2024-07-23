@@ -13,6 +13,7 @@
 		73257F6F2BF7BADD00D34959 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73257F6E2BF7BADD00D34959 /* MainView.swift */; };
 		73257F712BF7BAEB00D34959 /* AudioRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73257F702BF7BAEB00D34959 /* AudioRecorder.swift */; };
 		73257F732BF7BAF900D34959 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73257F722BF7BAF900D34959 /* AudioPlayer.swift */; };
+		73B861862C4FD87F00ADB664 /* CircularProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73B861852C4FD87F00ADB664 /* CircularProgressView.swift */; };
 		73DA1CEB2BF7BB2A008278D4 /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = 73DA1CEA2BF7BB2A008278D4 /* WhisperKit */; };
 		73DA1CED2BF7BB2A008278D4 /* whisperkit-cli in Frameworks */ = {isa = PBXBuildFile; productRef = 73DA1CEC2BF7BB2A008278D4 /* whisperkit-cli */; };
 /* End PBXBuildFile section */
@@ -25,6 +26,7 @@
 		73257F6E2BF7BADD00D34959 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		73257F702BF7BAEB00D34959 /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
 		73257F722BF7BAF900D34959 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
+		73B861852C4FD87F00ADB664 /* CircularProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularProgressView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 				73257F6E2BF7BADD00D34959 /* MainView.swift */,
 				73257F702BF7BAEB00D34959 /* AudioRecorder.swift */,
 				73257F722BF7BAF900D34959 /* AudioPlayer.swift */,
+				73B861852C4FD87F00ADB664 /* CircularProgressView.swift */,
 				73257F642BF7B9B400D34959 /* Assets.xcassets */,
 				73257F662BF7B9B400D34959 /* Preview Content */,
 			);
@@ -157,6 +160,7 @@
 				73257F712BF7BAEB00D34959 /* AudioRecorder.swift in Sources */,
 				73257F612BF7B9B400D34959 /* WhistateApp.swift in Sources */,
 				73257F6F2BF7BADD00D34959 /* MainView.swift in Sources */,
+				73B861862C4FD87F00ADB664 /* CircularProgressView.swift in Sources */,
 				73257F732BF7BAF900D34959 /* AudioPlayer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -294,6 +298,7 @@
 				DEVELOPMENT_TEAM = RW3A89L5S3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Microphone usage is required to dictate recorded audio data.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -323,6 +328,7 @@
 				DEVELOPMENT_TEAM = RW3A89L5S3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Microphone usage is required to dictate recorded audio data.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

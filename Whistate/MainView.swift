@@ -26,7 +26,7 @@ struct MainView: View {
                 Spacer()
                 HStack {
                     Toggle(isOn: $audioPlaying) {
-                        Image(systemName: audioPlaying ? "stop.fill" : "play.fill").resizable().frame(width: geometry.size.height/20, height: geometry.size.height/20)
+                        Image(systemName: audioPlaying ? "stop.fill" : "play.fill").resizable().frame(width: geometry.size.height/12.5, height: geometry.size.height/12.5)
                     }
                     .toggleStyle(.button)
                     .labelStyle(.iconOnly)
@@ -47,6 +47,15 @@ struct MainView: View {
                                 .foregroundColor(.red)
                         }
                     }.frame(width: geometry.size.height/10, height: geometry.size.height/10)
+                    Button(action: {
+                        
+                    }, label: {
+                        ZStack {
+                            Text(String(format: "%.2f", audioRecorder.downloadProgress*100) + "%").frame(width: geometry.size.height/10, height: geometry.size.height/10)
+                            CircularProgressView(progress: audioRecorder.downloadProgress)
+                        }
+                        
+                    }).frame(width: geometry.size.height/10, height: geometry.size.height/10)
                 }
                 Spacer()
             }.padding(15)

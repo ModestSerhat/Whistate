@@ -6,39 +6,21 @@ import WhisperKit
 
 @MainActor
 class AudioRecorder: ObservableObject {
-    let objectWillChange = PassthroughSubject<AudioRecorder, Never>()
     var audioRecorder: AVAudioRecorder!
     let modelStorage: String = "huggingface/models/argmaxinc/whisperkit-coreml"
     var localModelPath: String = ""
     var localModels: [String] = []
     var pipe: WhisperKit? = nil
-    
-    @AppStorage("selectedModel") private var selectedModel: String = WhisperKit.recommendedModels().default
+    var folder: URL? = nil
+
     @AppStorage("repoName") private var repoName: String = "argmaxinc/whisperkit-coreml"
+    @AppStorage("downloadCompleted") var downloadCompleted: Bool = false
     
-    var recording = false {
-        didSet {
-            objectWillChange.send(self)
-        }
-    }
-    
-    var transcriptionText: String? = nil {
-        didSet {
-            objectWillChange.send(self)
-        }
-    }
-    
-    var showPermissionAlert: Bool = false {
-        didSet {
-            objectWillChange.send(self)
-        }
-    }
-    
-    var transcribing: Bool = false {
-        didSet {
-            objectWillChange.send(self)
-        }
-    }
+    @Published var downloadProgress: Double = 0
+    @Published var recording = false
+    @Published var transcriptionText: String? = nil
+    @Published var showPermissionAlert: Bool = false
+    @Published var transcribing: Bool = false
     
     func getMicrophonePermission() async {
         let status = AVAudioApplication.shared.recordPermission
@@ -65,30 +47,26 @@ class AudioRecorder: ObservableObject {
             download: false
         )
         
-        var folder: URL?
-        // Check if the model is available locally
-        if localModels.contains("large-v3") { // The string to check if a model is contained needs to be changed
-            // Get local model folder URL from localModels
-            // TODO: Make this configurable in the UI
-            folder = URL(fileURLWithPath: localModelPath).appendingPathComponent("large-v3")
-        } else {
-            // Download the model
-            folder = try await WhisperKit.download(variant: "large-v3", from: repoName, progressCallback: { progress in
-                print(progress)
-            })
-        } 
-
-        
-        if let modelFolder = folder {
-
-            pipe?.modelFolder = modelFolder
-            
-            try await pipe?.prewarmModels()
+        if !localModels.contains("openai_whisper-large-v3") {
+            try await downloadModel()
         }
         
-        // Prewarm models before transcription
-        try await pipe?.loadModels()
+        folder = URL(fileURLWithPath: localModelPath).appendingPathComponent("openai_whisper-large-v3")
+        if let modelFolder = folder {
+            pipe?.modelFolder = modelFolder
+            try await pipe?.prewarmModels()
+        }
 
+        try await pipe?.loadModels()
+    }
+    
+    func downloadModel() async throws {
+        folder = try await WhisperKit.download(variant: "large-v3", from: repoName, progressCallback: { progress in
+            DispatchQueue.main.async {
+                self.downloadProgress = progress.fractionCompleted
+            }
+        })
+        downloadCompleted = true
     }
     
     func startRecording() async {
@@ -161,11 +139,9 @@ class AudioRecorder: ObservableObject {
     }
     
     func fetchModels() {
-        // First check what's already downloaded
         if let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
             let modelPath = documents.appendingPathComponent(modelStorage).path
-            
-            // Check if the directory exists
+
             if FileManager.default.fileExists(atPath: modelPath) {
                 do {
                     localModelPath = modelPath
@@ -189,10 +165,10 @@ class AudioRecorder: ObservableObject {
     }
     
     init() {
-        self.fetchModels()
+        fetchModels()
         Task {
             do {
-                try await self.initializePipe()
+                try await initializePipe()
             } catch {
                 print("Error initializing WhisperKit pipe! \(error.localizedDescription)")
             }
