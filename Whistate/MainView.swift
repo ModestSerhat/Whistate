@@ -35,6 +35,7 @@ struct MainView: View {
                             audioPlayer.stopAudio()
                         }
                     }.frame(width: geometry.size.height/12.5, height: geometry.size.height/12.5)
+                    .disabled(!audioRecorder.downloadCompleted)
                     Spacer().frame(width: geometry.size.height/18.75)
                     GeometryReader { recordButtonGeometry in
                         ZStack {
@@ -42,14 +43,21 @@ struct MainView: View {
                                 .stroke(colorScheme == .dark ? .white : .gray, lineWidth: 3)
                             recordButton(size: recordButtonGeometry.size.height - borderSpacing)
                                 .animation(.easeInOut(duration: 1), value: audioRecorder.recording)
-                                .foregroundColor(.red)
+                                .foregroundColor(audioRecorder.downloadCompleted ? .red: .gray)
                         }
                     }.frame(width: geometry.size.height/12.5, height: geometry.size.height/12.5)
+                    .disabled(!audioRecorder.downloadCompleted)
                     Spacer().frame(width: geometry.size.height/18.75)
                     GeometryReader { downloadButtonGeometry in
                         let fontSize = downloadButtonGeometry.size.height / 5
                         Button(action: {
-                            
+                            Task {
+                                do {
+                                    try await audioRecorder.downloadAndPrepareModel()
+                                } catch {
+                                    print("Error preparing and downloading models for WhisperKit pipe! \(error.localizedDescription)")
+                                }
+                            }
                         }, label: {
                             ZStack {
                                 audioRecorder.downloadCompleted ? Text("Done!").font(.system(size: fontSize)) : Text(String(format: "%.2f", audioRecorder.downloadProgress*100) + "%").font(.system(size: fontSize))

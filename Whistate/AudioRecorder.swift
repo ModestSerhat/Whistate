@@ -46,27 +46,17 @@ class AudioRecorder: ObservableObject {
             load: false,
             download: false
         )
-        
-        if !localModels.contains("openai_whisper-large-v3") {
-            try await downloadModel()
-        }
-        
-        folder = URL(fileURLWithPath: localModelPath).appendingPathComponent("openai_whisper-large-v3")
-        if let modelFolder = folder {
-            pipe?.modelFolder = modelFolder
-            try await pipe?.prewarmModels()
-        }
-
-        try await pipe?.loadModels()
     }
     
-    func downloadModel() async throws {
-        folder = try await WhisperKit.download(variant: "large-v3", from: repoName, progressCallback: { progress in
-            DispatchQueue.main.async {
-                self.downloadProgress = progress.fractionCompleted
-            }
-        })
-        downloadCompleted = true
+    func downloadAndPrepareModel() async throws {
+        if !downloadCompleted {
+            folder = try await WhisperKit.download(variant: "large-v3", from: repoName, progressCallback: { progress in
+                DispatchQueue.main.async {
+                    self.downloadProgress = progress.fractionCompleted
+                }
+            })
+            try await fetchModels()
+        }
     }
     
     func startRecording() async {
@@ -123,24 +113,32 @@ class AudioRecorder: ObservableObject {
             
             let audioURL = documentsDirectory.appendingPathComponent("audio.m4a")
             let audioPath = audioURL.path(percentEncoded: true)
-            guard let transcription = try await pipe?.transcribe(audioPath: audioPath) else {
+            guard let transcription: [TranscriptionResult] = try await pipe?.transcribe(audioPath: audioPath) else {
                 print("Failed to transcribe text from audio in WhisperKit")
                 transcribing = false
                 return
             }
             
-            transcriptionText = transcription.text
+            for result in transcription {
+                if let unwrappedTranscriptionText = transcriptionText {
+                    transcriptionText = unwrappedTranscriptionText + result.text
+                } else {
+                    transcriptionText = result.text
+                }
+            }
             transcribing = false
             
         } catch {
-            print("An error has occurred! \(error)")
+            print("An error has occurred while stopping recording! \(error)")
             transcribing = false
         }
     }
     
-    func fetchModels() {
+    func fetchModels() async throws {
         if let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
             let modelPath = documents.appendingPathComponent(modelStorage).path
+            let largeModelPath = modelPath.appending("/openai_whisper-large-v3/")
+            let filesToCheck = ["AudioEncoder.mlmodelc", "MelSpectrogram.mlmodelc", "TextDecoder.mlmodelc", "config.json", "generation_config.json"]
 
             if FileManager.default.fileExists(atPath: modelPath) {
                 do {
@@ -148,6 +146,17 @@ class AudioRecorder: ObservableObject {
                     let downloadedModels = try FileManager.default.contentsOfDirectory(atPath: modelPath)
                     for model in downloadedModels where !localModels.contains(model) {
                         localModels.append(model)
+                    }
+                    
+                    var filesFound = 0
+                    for file in filesToCheck {
+                        let filePath = largeModelPath.appending(file)
+                        if FileManager.default.fileExists(atPath: filePath) {
+                            filesFound += 1
+                        }
+                    }
+                    if filesFound == filesToCheck.count {
+                        downloadCompleted = true
                     }
                 } catch {
                     print("Error enumerating files at \(modelPath): \(error.localizedDescription)")
@@ -157,15 +166,17 @@ class AudioRecorder: ObservableObject {
         
         localModels = WhisperKit.formatModelFiles(localModels)
         
-        print("Found locally: \(localModels)")
-        
-        //Task {
-        //    let remoteModels = try await WhisperKit.fetchAvailableModels(from: repoName)
-        //}
+        folder = URL(fileURLWithPath: localModelPath).appendingPathComponent("openai_whisper-large-v3")
+        if let modelFolder = folder {
+            pipe?.modelFolder = modelFolder
+            try await pipe?.prewarmModels()
+        }
+
+        try await pipe?.loadModels()
     }
+
     
     init() {
-        fetchModels()
         Task {
             do {
                 try await initializePipe()
