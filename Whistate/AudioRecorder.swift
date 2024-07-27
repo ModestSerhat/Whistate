@@ -42,6 +42,8 @@ class AudioRecorder: ObservableObject {
     
     func initializePipe() async throws {
         pipe = try await WhisperKit(
+            verbose: true,
+            logLevel: .error,
             prewarm: false,
             load: false,
             download: false
@@ -50,13 +52,13 @@ class AudioRecorder: ObservableObject {
     
     func downloadAndPrepareModel() async throws {
         if !downloadCompleted {
-            folder = try await WhisperKit.download(variant: "large-v3", from: repoName, progressCallback: { progress in
+            folder = try await WhisperKit.download(variant: "small.en", from: repoName, progressCallback: { progress in
                 DispatchQueue.main.async {
                     self.downloadProgress = progress.fractionCompleted
                 }
             })
-            try await fetchModels()
         }
+        try await fetchModels()
     }
     
     func startRecording() async {
@@ -104,6 +106,7 @@ class AudioRecorder: ObservableObject {
             audioRecorder.stop()
             recording = false
             transcribing = true
+            transcriptionText = nil
             
             guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
                 print("Could not access documents directory")
@@ -127,7 +130,7 @@ class AudioRecorder: ObservableObject {
                 }
             }
             transcribing = false
-            
+
         } catch {
             print("An error has occurred while stopping recording! \(error)")
             transcribing = false
@@ -136,8 +139,9 @@ class AudioRecorder: ObservableObject {
     
     func fetchModels() async throws {
         if let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            
             let modelPath = documents.appendingPathComponent(modelStorage).path
-            let largeModelPath = modelPath.appending("/openai_whisper-large-v3/")
+            let largeModelPath = modelPath.appending("/openai_whisper-small.en/")
             let filesToCheck = ["AudioEncoder.mlmodelc", "MelSpectrogram.mlmodelc", "TextDecoder.mlmodelc", "config.json", "generation_config.json"]
 
             if FileManager.default.fileExists(atPath: modelPath) {
@@ -166,7 +170,7 @@ class AudioRecorder: ObservableObject {
         
         localModels = WhisperKit.formatModelFiles(localModels)
         
-        folder = URL(fileURLWithPath: localModelPath).appendingPathComponent("openai_whisper-large-v3")
+        folder = URL(fileURLWithPath: localModelPath).appendingPathComponent("openai_whisper-small.en")
         if let modelFolder = folder {
             pipe?.modelFolder = modelFolder
             try await pipe?.prewarmModels()
@@ -176,10 +180,15 @@ class AudioRecorder: ObservableObject {
     }
 
     
+    // TODO: Seperate WhisperKit pipe related functions to another class instead of being in audioRecorder
+    
     init() {
         Task {
             do {
                 try await initializePipe()
+                if self.downloadCompleted {
+                    try await fetchModels()
+                }
             } catch {
                 print("Error initializing WhisperKit pipe! \(error.localizedDescription)")
             }

@@ -27,6 +27,7 @@
 		73257F702BF7BAEB00D34959 /* AudioRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRecorder.swift; sourceTree = "<group>"; };
 		73257F722BF7BAF900D34959 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		73B861852C4FD87F00ADB664 /* CircularProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularProgressView.swift; sourceTree = "<group>"; };
+		73F933E82C53D8F500ED08B0 /* Whistate.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Whistate.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +62,7 @@
 		73257F5F2BF7B9B400D34959 /* Whistate */ = {
 			isa = PBXGroup;
 			children = (
+				73F933E82C53D8F500ED08B0 /* Whistate.entitlements */,
 				73257F602BF7B9B400D34959 /* WhistateApp.swift */,
 				73257F6E2BF7BADD00D34959 /* MainView.swift */,
 				73257F702BF7BAEB00D34959 /* AudioRecorder.swift */,
@@ -292,6 +294,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Whistate/Whistate.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Whistate/Preview Content\"";
@@ -322,6 +325,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Whistate/Whistate.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Whistate/Preview Content\"";

@@ -24,8 +24,6 @@ class AudioPlayer {
             print("Failed to set up playback session")
             return
         }
-        
-        
     }
     
     func stopAudio() {
